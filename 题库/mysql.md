@@ -1002,3 +1002,48 @@ order_0, order_1, order_2 ... order_15
 常用中间件：ShardingSphere、MyCat。
 
 一般建议：能不分就不分，先优化索引、读写分离、缓存，实在扛不住再分库分表。
+
+## 高并发下这条 SQL 慢查询如何定位和优化？如何处理主从延迟与深分页？
+
+这条 SQL 我会先用 EXPLAIN ANALYZE 看执行路径，重点确认有没有 Using filesort、扫描行数和回表成本。\
+如果当前只在 create\_time 上建索引，我会改成复合索引 (user\_id, status, create\_time desc, id)，因为过滤是 user\_id+status，排序是 create\_time，这样可以在索引层完成过滤和有序输出，避免大范围扫描和排序。\
+另外我会避免 select \*，列表页只取必要字段，减少回表和网络开销。\
+主从延迟场景下，下单后立即查单我会采用写后读策略：短时间读主库，或者按 GTID/位点等待从库追平，超时降级读主，缓存只做加速不做一致性保证。\
+深分页我会用 seek 分页，不用 offset，并且因为排序是 create\_time desc，游标要用 (create\_time, id) 复合条件，避免同时间戳下漏数和重复。
+
+参考 SQL：
+
+```sql
+-- 原查询
+SELECT *
+FROM orders
+WHERE user_id = ?
+  AND status = 1
+ORDER BY create_time DESC
+LIMIT 20;
+
+-- 推荐索引（MySQL 8.0+ 可写 DESC）
+CREATE INDEX idx_orders_user_status_ctime_id
+ON orders (user_id, status, create_time DESC, id DESC);
+
+-- 列表查询建议只取必要字段，减少回表
+SELECT id, user_id, status, create_time, amount
+FROM orders
+WHERE user_id = ?
+  AND status = 1
+ORDER BY create_time DESC, id DESC
+LIMIT 20;
+
+-- 深分页（seek/游标分页）
+-- last_create_time、last_id 来自上一页最后一条记录
+SELECT id, user_id, status, create_time, amount
+FROM orders
+WHERE user_id = ?
+  AND status = 1
+  AND (
+    create_time < :last_create_time
+    OR (create_time = :last_create_time AND id < :last_id)
+  )
+ORDER BY create_time DESC, id DESC
+LIMIT 20;
+```
