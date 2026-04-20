@@ -1,0 +1,7 @@
+interface:
+  display_name: "Interview Assistant Review Quiz"
+  short_description: "Review saved local question-bank topics in this project"
+  default_prompt: "Use $interview-assistant-review-quiz to review questions from this project's local question bank."
+
+policy:
+  allow_implicit_invocation: true

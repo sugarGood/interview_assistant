@@ -1,0 +1,7 @@
+interface:
+  display_name: "Interview Assistant Save Interview"
+  short_description: "Save questions and explanations into local question banks"
+  default_prompt: "Use $interview-assistant-save-interview to save the current question and answer into this project's question bank."
+
+policy:
+  allow_implicit_invocation: true

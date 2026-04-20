@@ -1,0 +1,7 @@
+interface:
+  display_name: "Interview Assistant Weak Analysis"
+  short_description: "Analyze resume-vs-question-bank gaps and priorities"
+  default_prompt: "Use $interview-assistant-weak-analysis to analyze resume coverage gaps and question-bank priorities for this project."
+
+policy:
+  allow_implicit_invocation: true

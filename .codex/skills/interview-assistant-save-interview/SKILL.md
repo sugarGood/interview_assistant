@@ -1,9 +1,9 @@
 ---
-name: "save-interview"
-description: "Saves interview questions into local question-bank files. Invoke when user asks to save a question or persist interview content into 题库/*.md."
+name: "interview-assistant-save-interview"
+description: "Saves interview questions into local question-bank files for the interview_assistant project. Invoke when the user mentions /save-interview or asks to save a question or explanation into 题库/*.md."
 ---
 
-# Save Interview
+# Interview Assistant Save Interview
 
 用于把当前对话中的题目和答案保存到本地 `题库/*.md`，并尽量避免重复写入。
 
@@ -24,10 +24,6 @@ description: "Saves interview questions into local question-bank files. Invoke w
 - 当前题目的标准答案或详细讲解整理稿
 - 详细讲解模式中的连续追问与回答内容
 - 现有 `题库/*.md` 文件列表与文件内容
-- 可选的调用来源信息，例如：
-  - `题后保存并进入下一题`
-  - `详细讲解后保存并进入下一题`
-  - `结束面试前保存`
 
 ## Output Contract
 
@@ -36,7 +32,6 @@ description: "Saves interview questions into local question-bank files. Invoke w
 3. 必须先检查同名题和相似题
 4. 必须在 `融合更新 / 追加新题 / 保持不变` 三者中选择处理动作
 5. 保存后必须输出结构化回执
-6. 若调用方已声明保存后的后续动作，回执中必须保留该动作，供调用方继续执行
 
 ## Core Principles
 
@@ -129,9 +124,9 @@ refresh 解决可搜索性，flush 更偏持久化与 translog 清理。
 
 - 任一时刻只问 1 个确认问题
 - 目录确认、覆盖策略、继续保存等问题必须串行
-- 需要用户做选择时，优先使用可点击选项
+- 需要用户做选择时，优先明确列出简洁选项
+- 若当前界面支持可点击选项，可使用可点击方式
 - 如果判断为相似题但无法确定该融合还是新建，必须先询问用户
-- 若调用方已经明确指定“保存后进入下一题 / 保存后结束面试”，不要额外再追问一次相同去向，除非相似题策略本身无法确定
 
 ## Execution Flow
 
@@ -168,16 +163,6 @@ refresh 解决可搜索性，flush 更偏持久化与 translog 清理。
 - 来自详细讲解对话的追问，若已达到独立面试题标准：拆为新题或分别融合到对应旧题
 - 若新内容没有新增价值：保持不变
 
-## Return Contract For Callers
-
-- 若本 skill 是被 `mock-interview` 调用，必须把“保存完成后的建议动作”视为回执的一部分。
-- 支持以下标准返回动作：
-  - `继续下一题`
-  - `回到详细讲解收口确认`
-  - `直接结束面试`
-- 当调用来源已经足够明确时，本 skill 不应改变调用方原定的后续流转，只负责保存判断与回执。
-- 不要在保存成功后自行引导用户重新选择“下一题还是保存”，避免和调用方状态机冲突。
-
 ## Success Criteria
 
 - 写入后题库结构仍然清晰
@@ -209,7 +194,6 @@ refresh 解决可搜索性，flush 更偏持久化与 translog 清理。
 - 跳过题目数
 - 归档目录
 - 目标文件
-- 调用方后续动作：若已提供则原样回显
 
 ## Error Handling
 
