@@ -1,0 +1,7 @@
+interface:
+  display_name: "Interview Assistant Help"
+  short_description: "Quick start and usage guide for interview assistant"
+  default_prompt: "Use $interview-assistant-help to explain this interview assistant project and how to get started."
+
+policy:
+  allow_implicit_invocation: true

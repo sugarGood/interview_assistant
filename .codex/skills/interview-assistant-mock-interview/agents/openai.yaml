@@ -1,0 +1,7 @@
+interface:
+  display_name: "Interview Assistant Mock Interview"
+  short_description: "Run mock interviews with compact choice prompts"
+  default_prompt: "Use $interview-assistant-mock-interview to run a technical or comprehensive mock interview with compact, button-like choices in this project."
+
+policy:
+  allow_implicit_invocation: true
