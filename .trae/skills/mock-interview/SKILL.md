@@ -182,6 +182,7 @@ description: "Runs a mock interview. Invoke when user enters /mock-interview or 
 ## External Source Rules
 
 - 在每个新方向开始前，必须先做外部题源检索。
+- 当用户指定题源网站时，必须优先参考该网站；若用户未指定，默认优先参考 `https://www.mianshiya.com/` 的近 2-3 年高频题型信号。
 - 检索关键词应围绕“技术方向 + 国内大厂 + 高频面试题 / 面经 / 面试题库”。
 - 优先参考近 2-3 年内容，重点关注阿里、腾讯、字节、美团、京东、百度、拼多多、蚂蚁、滴滴、快手等公司常见题型。
 - 检索结果只作为题型、难度、问法和追问角度的参考，不直接照搬原题。
